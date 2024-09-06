@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.mycalories.domain.model.getFoodList
 import com.example.mycalories.ui.theme.MyCaloriesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -11,10 +12,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContent {
             MyCaloriesTheme {
-
+                HomeScreen(foodList = getFoodList())
             }
         }
     }
