@@ -11,17 +11,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mycalories.domain.model.FoodItemModel
 import com.example.mycalories.domain.model.getFoodList
 import com.example.mycalories.ui.theme.MyCaloriesTheme
@@ -30,6 +45,8 @@ import com.example.mycalories.ui.theme.MyCaloriesTheme
 fun HomeScreen(
     foodList: List<FoodItemModel>
 ) {
+    var showAddDialog by remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -45,7 +62,14 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
         FoodListView(foodList)
 
-        ButtonView()
+        ButtonView { showAddDialog = !showAddDialog }
+
+        if (showAddDialog) {
+            AddDialog(
+                onAddClick = { /*TODO*/ },
+                onDismissClick = { showAddDialog = !showAddDialog }
+            )
+        }
     }
 }
 
@@ -69,7 +93,9 @@ fun FoodItemView(food: FoodItemModel) {
 }
 
 @Composable
-fun ButtonView() {
+fun ButtonView(
+    onAddClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,11 +104,98 @@ fun ButtonView() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
-        Button(modifier = Modifier
-            .size(70.dp),
-            onClick = { /*TODO*/ }
+        Button(
+            modifier = Modifier
+                .size(70.dp),
+            onClick = onAddClick
         ) {
             Text(fontSize = 12.sp, text = "Add")
+        }
+    }
+}
+
+@Composable
+fun AddDialog(
+    onAddClick: () -> Unit,
+    onDismissClick: () -> Unit
+) {
+    var selectedItem: FoodItemModel? by remember { mutableStateOf(null) }
+
+    Dialog(
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        onDismissRequest = { }
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+            ) {
+                val (searchSelector, tfWeight, txtCalories) = createRefs()
+
+                var weightInput by rememberSaveable { mutableDoubleStateOf(0.0) }
+
+//                TextField(
+//                    modifier = Modifier
+//                        .constrainAs(tfWeight) {
+//                            top.linkTo(parent.top, margin = 350.dp)
+//                            start.linkTo(parent.start)
+//                        }
+//                        .size(60.dp),
+//                    keyboardOptions = KeyboardOptions.Default.copy(
+//                        imeAction = ImeAction.Done
+//                    ),
+//                    keyboardActions = KeyboardActions(
+//                        onDone = {
+////                            focusManager.clearFocus() // Clears focus when IME action is clicked
+//                        }
+//                    ),
+//
+//                            value = weightInput.toString(),
+//                    onValueChange = { weightInput = it.toDouble() }
+//                )
+
+                TextField(
+                    modifier = Modifier.constrainAs(tfWeight){
+                        top.linkTo(parent.top, margin = 350.dp)
+                        start.linkTo(parent.start)
+                    },
+                    value = "",
+                    onValueChange = {}
+                )
+
+                Text(
+                    modifier = Modifier.constrainAs(txtCalories) {
+                        top.linkTo(tfWeight.top)
+                        bottom.linkTo(tfWeight.bottom)
+                        end.linkTo(parent.end)
+                    },
+                    text = (selectedItem?.calories?.times(weightInput)).toString(),
+                    fontWeight = FontWeight.Bold
+                )
+//                Button(
+//                    onClick = onDismissClick
+//                ) {
+//                    Text(text = "Hide")
+//                }
+
+
+                FoodSearchView(
+                    modifier = Modifier.constrainAs(searchSelector) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                ) { item ->
+                    selectedItem = item
+                }
+            }
         }
     }
 }

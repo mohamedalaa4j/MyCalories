@@ -10,6 +10,12 @@ data class FoodItemModel (
 
 fun getFoodList() = listOf(
     FoodItemModel(
+        "milk",
+        120.5,
+        4.0,
+        20.0,
+        2.0
+    ),FoodItemModel(
         "rice",
         120.5,
         4.0,
