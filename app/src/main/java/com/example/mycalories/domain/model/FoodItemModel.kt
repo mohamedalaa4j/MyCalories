@@ -8,10 +8,10 @@ data class FoodItemModel (
     val fat: Double
 )
 
-fun getFoodList() = listOf(
+fun getFoodList() = mutableListOf(
     FoodItemModel(
         "milk",
-        120.5,
+        220.0,
         4.0,
         20.0,
         2.0
@@ -30,6 +30,12 @@ fun getFoodList() = listOf(
     ),FoodItemModel(
         "rice",
         120.5,
+        4.0,
+        20.0,
+        2.0
+    ), FoodItemModel(
+        "milk",
+        220.0,
         4.0,
         20.0,
         2.0

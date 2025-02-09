@@ -44,18 +44,23 @@ import com.example.mycalories.domain.model.getFoodList
 import com.example.mycalories.ui.theme.MyCaloriesTheme
 
 @Composable
-fun FoodSearchView(modifier: Modifier = Modifier, foodList: List<FoodItemModel> = getFoodList(),onItemClick: (item: FoodItemModel)-> Unit) {
-    val focusManager = LocalFocusManager.current
+fun FoodSearchView(
+    modifier: Modifier = Modifier,
+    foodList: List<FoodItemModel> = getFoodList(),
+    onItemClick: (item: FoodItemModel) -> Unit,
+    onKeyboardDone: () -> Unit
+) {
+//    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = modifier
             .fillMaxSize()
 //            .background(colorResource(id = R.color.teal_700))
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }
+//            .pointerInput(Unit) {
+//                detectTapGestures(onTap = {
+//                    focusManager.clearFocus()
+//                })
+//            }
     ) {
         var textInput by rememberSaveable { mutableStateOf("") }
 
@@ -74,17 +79,19 @@ fun FoodSearchView(modifier: Modifier = Modifier, foodList: List<FoodItemModel> 
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    focusManager.clearFocus() // Clears focus when IME action is clicked
+                    onKeyboardDone()
+//                    focusManager.clearFocus() // Clears focus when IME action is clicked
                 }
             ),
             value = textInput,
             onValueChange = { textInput = it }
         )
 
+        if (isFocused) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(if (isFocused) 1F else 0F)
+//                .alpha(if (isFocused) 1F else 0F)
         ) {
             LazyColumn {
                 items(
@@ -92,24 +99,24 @@ fun FoodSearchView(modifier: Modifier = Modifier, foodList: List<FoodItemModel> 
                         it.name.lowercase().contains(textInput)
                     }.sortedBy { it.name }
                 ) { food ->
-                    FoodsItemView(item = food){
+                    FoodsItemView(item = food) {
                         onItemClick(food)
                         textInput = food.name
-                        focusManager.clearFocus()
                     }
                 }
             }
         }
     }
+    }
 
 }
 
 @Composable
-fun FoodsItemView(item: FoodItemModel,onItemClick: ()-> Unit) {
+fun FoodsItemView(item: FoodItemModel, onItemClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {onItemClick()},
+            .clickable { onItemClick() },
     ) {
         val (txtName, txtCal) = createRefs()
 
@@ -155,7 +162,7 @@ fun FoodsItemView(item: FoodItemModel,onItemClick: ()-> Unit) {
 @Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_3)
 fun MyPreview() {
     MyCaloriesTheme {
-        FoodSearchView{}
+        FoodSearchView(onItemClick = {}, onKeyboardDone = {})
 //        FoodsItemView()
     }
 }
