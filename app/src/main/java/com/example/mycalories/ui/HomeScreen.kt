@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -55,21 +57,22 @@ fun HomeScreen(
     defaultFoodList: MutableList<FoodItemModel>
 ) {
     var foodList: MutableList<FoodItemModel> by remember { mutableStateOf(defaultFoodList) }
-    var showAddDialog by remember { mutableStateOf(true) }
+    var showAddDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 20.dp),
-            text = foodList.sumOf { it.calories }.toString(),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+        TotalView(foodList)
+//        Text(
+//            modifier = Modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(vertical = 20.dp),
+//            text = foodList.sumOf { it.calories }.toString(),
+//            fontSize = 24.sp,
+//            fontWeight = FontWeight.Bold
+//        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+//        Spacer(modifier = Modifier.height(16.dp))
         FoodListView(foodList)
 
         ButtonView { showAddDialog = !showAddDialog }
@@ -87,9 +90,54 @@ fun HomeScreen(
 }
 
 @Composable
+fun TotalView(foodList: MutableList<FoodItemModel>) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        val (caloriesCount, caloriesTitle, macros) = createRefs()
+
+        Text(
+            modifier = Modifier.constrainAs(caloriesCount) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            text = foodList.sumOf { it.calories }.toString(),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            modifier = Modifier.constrainAs(caloriesTitle) {
+                top.linkTo(caloriesCount.top)
+                bottom.linkTo(caloriesCount.bottom)
+                start.linkTo(caloriesCount.end, margin = 8.dp)
+            },
+            text = "Cal",
+            fontSize = 12.sp,
+        )
+
+        Text(
+            modifier = Modifier.constrainAs(macros) {
+                top.linkTo(caloriesCount.bottom, margin = 8.dp)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            text = "${foodList.sumOf { it.protein }} Protein - ${foodList.sumOf { it.carp }} carp - ${foodList.sumOf { it.fat }} fat",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 fun FoodListView(foodList: List<FoodItemModel>) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 6.dp)
     ) {
         items(foodList) { food ->
             FoodItemView(food = food)
@@ -99,10 +147,57 @@ fun FoodListView(foodList: List<FoodItemModel>) {
 
 @Composable
 fun FoodItemView(food: FoodItemModel) {
-    Text(
-        text = "${food.name} ${food.calories} cal",
-        fontSize = 14.sp
-    )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            val (name, macros, calories) = createRefs()
+
+            Text(
+                modifier = Modifier.constrainAs(name) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(macros.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(calories.start)
+                    width = Dimension.fillToConstraints
+                },
+                text = food.name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                modifier = Modifier.constrainAs(macros) {
+                    top.linkTo(name.bottom)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(calories.start)
+                    width = Dimension.fillToConstraints
+                },
+                text = "${food.protein} Protein - ${food.carp} carp - ${food.fat} fat",
+                fontSize = 12.sp,
+            )
+
+            Text(
+                modifier = Modifier.constrainAs(calories) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                },
+                text = "${food.calories} Cal",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+    }
 }
 
 @Composable
