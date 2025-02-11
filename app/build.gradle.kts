@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.dagger.hilt.android)
-    alias(libs.plugins.jetbrains.kotlin.kapt)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -66,12 +66,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    //
-    implementation(libs.constraintlayout)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-}
 
-kapt {
-    correctErrorTypes= true
+    // Compose ConstraintLayout
+    implementation(libs.constraintlayout)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }
