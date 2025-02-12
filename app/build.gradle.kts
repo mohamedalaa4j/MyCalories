@@ -73,4 +73,11 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.database)
+    implementation(libs.room.database.coroutines.support)
+
+    // Gson
+    implementation(libs.gson)
 }

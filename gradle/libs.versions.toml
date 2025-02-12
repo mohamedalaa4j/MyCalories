@@ -12,6 +12,7 @@ ksp = "2.0.20-1.0.25"
 hilt = "2.52"
 constraintlayout = "1.0.1"
 roomVersion = "2.6.1"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,8 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 room-database = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 room-database-coroutines-support = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 
+# Gson
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
