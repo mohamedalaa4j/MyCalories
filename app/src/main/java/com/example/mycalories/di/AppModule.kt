@@ -3,6 +3,8 @@ package com.example.mycalories.di
 import android.content.Context
 import androidx.room.Room
 import com.example.mycalories.data.AppDatabase
+import com.example.mycalories.data.RepositoryImpl
+import com.example.mycalories.domain.model.Repository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +23,11 @@ class AppModule {
             .databaseBuilder(app, AppDatabase::class.java, "day_intake_record")
             .fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRepository(db: AppDatabase): Repository {
+        return RepositoryImpl(db.dao())
     }
 }

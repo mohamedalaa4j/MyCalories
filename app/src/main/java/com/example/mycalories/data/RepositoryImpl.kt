@@ -10,4 +10,8 @@ class RepositoryImpl @Inject constructor(
     override suspend fun insertRecord(record: DayIntakeRecord) {
         db.insertRecord(record)
     }
+
+    override suspend fun getAllRecords(): List<DayIntakeRecord> {
+        return db.getAllRecords()
+    }
 }

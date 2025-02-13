@@ -48,12 +48,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mycalories.domain.model.FoodItemModel
 import com.example.mycalories.domain.model.getFoodList
 import com.example.mycalories.ui.theme.MyCaloriesTheme
 
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
     defaultFoodList: MutableList<FoodItemModel>
 ) {
     var foodList: MutableList<FoodItemModel> by remember { mutableStateOf(defaultFoodList) }
@@ -364,6 +366,6 @@ fun calculateWeightCalories(calories: Double?, weight: String): String {
 @Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_3)
 fun Preview() {
     MyCaloriesTheme {
-        HomeScreen(getFoodList())
+        HomeScreen(defaultFoodList = getFoodList())
     }
 }

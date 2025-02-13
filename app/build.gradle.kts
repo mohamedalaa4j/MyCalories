@@ -72,12 +72,24 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.compose.viewModel)
     ksp(libs.hilt.compiler)
 
     // Room
     implementation(libs.room.database)
     implementation(libs.room.database.coroutines.support)
+    ksp(libs.room.database.compiler)
 
     // Gson
     implementation(libs.gson)
+
+    // Coroutines
+    implementation(libs.coroutines)
+
+    // ViewModel + Coroutines Support
+    implementation(libs.coroutines.viewmodel.support)
+
+    // Lifecycle runtime for Compose (coroutine scope awareness)
+    implementation(libs.coroutines.compose.lifecyle.awarreness)
+
 }

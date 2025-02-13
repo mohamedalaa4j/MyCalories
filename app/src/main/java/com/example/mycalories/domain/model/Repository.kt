@@ -6,4 +6,5 @@ import javax.inject.Inject
 
 interface Repository {
     suspend fun insertRecord(record: DayIntakeRecord)
+    suspend fun getAllRecords(): List<DayIntakeRecord>
 }
