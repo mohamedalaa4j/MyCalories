@@ -70,7 +70,10 @@ fun HomeScreen(
     ) {
         TotalView(foodList)
 
-        Box(contentAlignment = Alignment.BottomEnd) {
+        Box(
+            modifier = Modifier.fillMaxSize().weight(1f),
+            contentAlignment = Alignment.BottomEnd
+        ) {
             FoodListView(foodList = foodList,
                 onLongPress = { isDeleting = !isDeleting }
             )
@@ -141,7 +144,7 @@ fun TotalView(foodList: List<FoodItemModel>) {
 @Composable
 fun FoodListView(foodList: List<FoodItemModel>, onLongPress: () -> Unit) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             bottom = 90.dp,
         )
