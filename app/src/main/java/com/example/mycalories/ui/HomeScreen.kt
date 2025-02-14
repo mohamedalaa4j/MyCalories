@@ -1,5 +1,8 @@
 package com.example.mycalories.ui
 
+import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,14 +63,23 @@ fun HomeScreen(
 ) {
     val foodList by viewModel.foodListState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TotalView(foodList)
-        Box(contentAlignment = Alignment.BottomCenter) {
-            FoodListView(foodList)
-            ButtonView { showAddDialog = !showAddDialog }
+
+        Box(contentAlignment = Alignment.BottomEnd) {
+            FoodListView(foodList = foodList,
+                onLongPress = { isDeleting = !isDeleting }
+            )
+
+            ButtonView(
+                onAddClick = { showAddDialog = !showAddDialog },
+                onDeleteClick = {},
+                isDeleting = isDeleting
+            )
         }
 
         if (showAddDialog) {
@@ -122,88 +139,132 @@ fun TotalView(foodList: List<FoodItemModel>) {
 }
 
 @Composable
-fun FoodListView(foodList: List<FoodItemModel>) {
+fun FoodListView(foodList: List<FoodItemModel>, onLongPress: () -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(
-            start = 6.dp,
-            end = 6.dp,
             bottom = 90.dp,
-            )
+        )
     ) {
         items(foodList) { food ->
-            FoodItemView(food = food)
+            FoodItemView(
+                food = food,
+                onLongPress = onLongPress
+            )
         }
     }
 }
 
 @Composable
-fun FoodItemView(food: FoodItemModel) {
-    Card(
+fun FoodItemView(
+    food: FoodItemModel,
+    onLongPress: () -> Unit
+) {
+    val haptics = LocalHapticFeedback.current
+    var isSelected by remember { mutableStateOf(false) }
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) Color.LightGray else Color.White,
+        label = "BackgroundColorAnimation"
+    )
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+            .padding(horizontal = 6.dp)
+            .background(backgroundColor)
     ) {
-        ConstraintLayout(
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
+                .fillMaxWidth()
+                .padding(4.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            isSelected = !isSelected
+                            onLongPress()
+                        }
+                    )
+                },
+            elevation = CardDefaults.cardElevation(6.dp)
         ) {
-            val (name, macros, calories) = createRefs()
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+            ) {
+                val (name, macros, calories) = createRefs()
 
-            Text(
-                modifier = Modifier.constrainAs(name) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(macros.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(calories.start)
-                    width = Dimension.fillToConstraints
-                },
-                text = food.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    modifier = Modifier.constrainAs(name) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(macros.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(calories.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    text = food.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Text(
-                modifier = Modifier.constrainAs(macros) {
-                    top.linkTo(name.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(calories.start)
-                    width = Dimension.fillToConstraints
-                },
-                text = "${food.protein} Protein - ${food.carp} carp - ${food.fat} fat",
-                fontSize = 12.sp,
-            )
+                Text(
+                    modifier = Modifier.constrainAs(macros) {
+                        top.linkTo(name.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(calories.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    text = "${food.protein} Protein - ${food.carp} carp - ${food.fat} fat",
+                    fontSize = 12.sp,
+                )
 
-            Text(
-                modifier = Modifier.constrainAs(calories) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                },
-                text = "${food.calories} Cal",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    modifier = Modifier.constrainAs(calories) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    },
+                    text = "${food.calories} Cal",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
         }
-
     }
+
 }
 
 @Composable
 fun ButtonView(
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    isDeleting: Boolean
 ) {
-    Column(
-        modifier = Modifier.padding(vertical = 18.dp)
+    Box(
+        modifier = Modifier.padding(18.dp)
     ) {
         Button(
-            modifier = Modifier.size(70.dp),
+            modifier = Modifier.size(84.dp),
             onClick = onAddClick
         ) {
             Text(fontSize = 12.sp, text = "Add")
+        }
+
+        if (isDeleting) {
+            Button(
+                modifier = Modifier.size(84.dp),
+                colors = ButtonColors(
+                    Color.Red,
+                    Color.White,
+                    Color.Red,
+                    Color.Red,
+                ),
+                onClick = onDeleteClick
+            ) {
+                Text(fontSize = 12.sp, text = "Delete")
+            }
         }
     }
 }
