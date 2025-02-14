@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.mycalories.data.AppDatabase
 import com.example.mycalories.data.RepositoryImpl
-import com.example.mycalories.domain.model.Repository
+import com.example.mycalories.domain.repository.Repository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

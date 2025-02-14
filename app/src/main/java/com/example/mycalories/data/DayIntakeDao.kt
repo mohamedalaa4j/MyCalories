@@ -15,4 +15,7 @@ interface DayIntakeDao {
 
     @Query("SELECT * FROM day_intake_record")
     suspend fun getAllRecords(): List<DayIntakeRecord>
+
+    @Query("DELETE FROM day_intake_record")
+    suspend fun deleteAll()
 }

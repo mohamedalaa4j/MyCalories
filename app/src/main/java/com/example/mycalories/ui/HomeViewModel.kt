@@ -3,45 +3,56 @@ package com.example.mycalories.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mycalories.data.DayIntakeRecord
 import com.example.mycalories.domain.model.FoodItemModel
-import com.example.mycalories.domain.model.Repository
+import com.example.mycalories.domain.repository.Repository
+import com.example.mycalories.domain.usecase.GetTodayRecordUseCase
+import com.example.mycalories.domain.usecase.AddFoodItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository
-): ViewModel() {
+    private val repo: Repository,
+    private val addFoodItemUseCase: AddFoodItemUseCase,
+    private val getTodayRecordUseCase: GetTodayRecordUseCase
+) : ViewModel() {
+    private val _foodListState = MutableStateFlow<List<FoodItemModel>>(emptyList())
+    val foodListState get() = _foodListState.asStateFlow()
 
     init {
-        Log.e("myTag", "init VM")
-        insert()
+//        deleteAll()
+        getFoodList()
     }
 
-    private fun insert() {
-        viewModelScope.launch {
-            delay(1000)
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val currentDate: String = sdf.format(Date())
-            val foodModel = FoodItemModel(
-                "food name", 20.0, 20.0, 20.0, 20.0
-            )
+     fun addFoodItem(foodItem: FoodItemModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addFoodItemUseCase(foodItem)
+            getFoodList()
+        }
+    }
 
-            repository.insertRecord(
-                DayIntakeRecord(
-                    currentDate,
-                    listOf(foodModel),
-                    1.0
-                )
-            )
-            Log.e("myTag", "DB insert done!")
+    private fun getFoodList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTodayRecordUseCase().collect { record ->
+                record?.let {
+                    _foodListState.emit(it.foodIntake)
+                }
+                Log.i("myTag", "foodListState" + foodListState.value.toString())
+            }
+        }
+    }
+
+    private fun deleteAll() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                repo.deleteAllRecords()
+            }
         }
     }
 }

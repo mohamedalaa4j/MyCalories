@@ -1,12 +1,9 @@
 package com.example.mycalories.ui
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -50,39 +47,28 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mycalories.domain.model.FoodItemModel
-import com.example.mycalories.domain.model.getFoodList
 import com.example.mycalories.ui.theme.MyCaloriesTheme
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    defaultFoodList: MutableList<FoodItemModel>
 ) {
-    var foodList: MutableList<FoodItemModel> by remember { mutableStateOf(defaultFoodList) }
+    val foodList by viewModel.foodListState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TotalView(foodList)
-//        Text(
-//            modifier = Modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(vertical = 20.dp),
-//            text = foodList.sumOf { it.calories }.toString(),
-//            fontSize = 24.sp,
-//            fontWeight = FontWeight.Bold
-//        )
-
-//        Spacer(modifier = Modifier.height(16.dp))
-        FoodListView(foodList)
-
-        ButtonView { showAddDialog = !showAddDialog }
+        Box(contentAlignment = Alignment.BottomCenter) {
+            FoodListView(foodList)
+            ButtonView { showAddDialog = !showAddDialog }
+        }
 
         if (showAddDialog) {
             AddDialog(
                 onAddClick = {
-                    foodList = (foodList + it) as MutableList<FoodItemModel>
+                    viewModel.addFoodItem(it)
                     showAddDialog = !showAddDialog
                 },
                 onDismissClick = { showAddDialog = !showAddDialog }
@@ -92,7 +78,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun TotalView(foodList: MutableList<FoodItemModel>) {
+fun TotalView(foodList: List<FoodItemModel>) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -139,7 +125,11 @@ fun TotalView(foodList: MutableList<FoodItemModel>) {
 fun FoodListView(foodList: List<FoodItemModel>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 6.dp)
+        contentPadding = PaddingValues(
+            start = 6.dp,
+            end = 6.dp,
+            bottom = 90.dp,
+            )
     ) {
         items(foodList) { food ->
             FoodItemView(food = food)
@@ -207,16 +197,10 @@ fun ButtonView(
     onAddClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Red)
-            .padding(vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
+        modifier = Modifier.padding(vertical = 18.dp)
     ) {
         Button(
-            modifier = Modifier
-                .size(70.dp),
+            modifier = Modifier.size(70.dp),
             onClick = onAddClick
         ) {
             Text(fontSize = 12.sp, text = "Add")
@@ -230,7 +214,6 @@ fun AddDialog(
     onDismissClick: () -> Unit
 ) {
     var selectedItem: FoodItemModel? by remember { mutableStateOf(null) }
-    var totalCalories: Double? by remember { mutableStateOf(100.0) }
 
     Dialog(
         properties = DialogProperties(
@@ -297,8 +280,6 @@ fun AddDialog(
                     value = weightInput,
                     onValueChange = {
                         weightInput = it
-                        Log.i("myTag", "calories = ${selectedItem?.calories}")
-                        Log.i("myTag", "weight = $weightInput")
                     }
                 )
 
@@ -309,8 +290,6 @@ fun AddDialog(
                         end.linkTo(parent.end)
                     },
                     text = calculateWeightCalories(selectedItem?.calories, weightInput),
-//                    text = totalCalories.toString(),
-//                    text = "g",
                     fontWeight = FontWeight.Bold
                 )
                 Button(
@@ -338,8 +317,6 @@ fun AddDialog(
                     onItemClick = { item ->
                         selectedItem = item
                         focusManager.clearFocus()
-                        Log.i("myTag", "calories = ${selectedItem?.calories}")
-                        Log.i("myTag", "weight = $weightInput")
                     },
                     onKeyboardDone = {
                         focusManager.clearFocus()
@@ -356,8 +333,6 @@ fun calculateWeightCalories(calories: Double?, weight: String): String {
         "0.0"
     } else {
         val calculated = calories?.times((weight.toDouble() / 100.0))
-        Log.i("myTag", "calculated = $calculated")
-        Log.i("myTag", "=================")
         return calculated.toString()
     }
 }
@@ -366,6 +341,6 @@ fun calculateWeightCalories(calories: Double?, weight: String): String {
 @Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_3)
 fun Preview() {
     MyCaloriesTheme {
-        HomeScreen(defaultFoodList = getFoodList())
+        HomeScreen()
     }
 }
