@@ -13,7 +13,8 @@ class MainActivity : ComponentActivity() {
 //        enableEdgeToEdge()
         setContent {
             MyCaloriesTheme {
-                HomeScreen()
+//                HomeScreen()
+                TestLazy()
             }
         }
     }

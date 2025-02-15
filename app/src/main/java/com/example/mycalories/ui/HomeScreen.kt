@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,9 +26,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,6 +66,7 @@ fun HomeScreen(
     val foodList by viewModel.foodListState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
+    var deletingItemIndex by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -71,16 +74,27 @@ fun HomeScreen(
         TotalView(foodList)
 
         Box(
-            modifier = Modifier.fillMaxSize().weight(1f),
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
             contentAlignment = Alignment.BottomEnd
         ) {
             FoodListView(foodList = foodList,
-                onLongPress = { isDeleting = !isDeleting }
+                onLongPress = { itemIndex ->
+                    deletingItemIndex = itemIndex
+                    isDeleting = !isDeleting
+                }
             )
 
             ButtonView(
                 onAddClick = { showAddDialog = !showAddDialog },
-                onDeleteClick = {},
+                onDeleteClick = {
+                    deletingItemIndex?.let {
+                        viewModel.removeTest(it)
+                        isDeleting = !isDeleting
+                        deletingItemIndex = null
+                    }
+                },
                 isDeleting = isDeleting
             )
         }
@@ -88,7 +102,8 @@ fun HomeScreen(
         if (showAddDialog) {
             AddDialog(
                 onAddClick = {
-                    viewModel.addFoodItem(it)
+//                    viewModel.addFoodItem(it)
+                    viewModel.addTest(it)
                     showAddDialog = !showAddDialog
                 },
                 onDismissClick = { showAddDialog = !showAddDialog }
@@ -142,17 +157,29 @@ fun TotalView(foodList: List<FoodItemModel>) {
 }
 
 @Composable
-fun FoodListView(foodList: List<FoodItemModel>, onLongPress: () -> Unit) {
+fun FoodListView(foodList: List<FoodItemModel>, onLongPress: (itemIndex: Int) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             bottom = 90.dp,
         )
     ) {
-        items(foodList) { food ->
+
+        itemsIndexed(foodList) { index,foodItem ->
             FoodItemView(
-                food = food,
-                onLongPress = onLongPress
+                food = foodItem,
+                isDeleting = {onLongPress(index)}
+//                isSelected = isSelected,
+//                onLongPress = {
+////                    onLongPress(foodList.indexOf(food))
+//                    if (isSelected) {
+//                        selectedItems.remove(index)
+//                        Log.i("myTag","isSelected true")
+//                    } else {
+//                        selectedItems.add(index)
+//                        Log.i("myTag","isSelected false")
+//                    }
+//                }
             )
         }
     }
@@ -161,7 +188,7 @@ fun FoodListView(foodList: List<FoodItemModel>, onLongPress: () -> Unit) {
 @Composable
 fun FoodItemView(
     food: FoodItemModel,
-    onLongPress: () -> Unit
+    isDeleting: ()-> Unit
 ) {
     val haptics = LocalHapticFeedback.current
     var isSelected by remember { mutableStateOf(false) }
@@ -179,12 +206,12 @@ fun FoodItemView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .pointerInput(Unit) {
+                .pointerInput(isSelected) {
                     detectTapGestures(
                         onLongPress = {
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             isSelected = !isSelected
-                            onLongPress()
+                            if (isSelected) isDeleting()
                         }
                     )
                 },
