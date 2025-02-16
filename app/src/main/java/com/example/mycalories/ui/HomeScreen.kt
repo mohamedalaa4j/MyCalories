@@ -1,8 +1,8 @@
 package com.example.mycalories.ui
 
-import android.util.Log
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,10 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,7 +37,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -64,9 +60,10 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val foodList by viewModel.foodListState.collectAsState()
+    var selectedItems by remember { mutableStateOf(setOf<Int>()) }
     var showAddDialog by remember { mutableStateOf(false) }
-    var isDeleting by remember { mutableStateOf(false) }
-    var deletingItemIndex by remember { mutableStateOf<Int?>(null) }
+    var deleteButtonVisibility by remember { mutableStateOf(false) }
+    val haptics = LocalHapticFeedback.current
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -79,26 +76,29 @@ fun HomeScreen(
                 .weight(1f),
             contentAlignment = Alignment.BottomEnd
         ) {
-            FoodListView(foodList = foodList,
-                onLongPress = { itemIndex ->
-                    deletingItemIndex = itemIndex
-                    isDeleting = !isDeleting
+            SelectableList(
+                foodList = foodList,
+                selectedItems = selectedItems,
+                onSelectionChange = { index ->
+                    deleteButtonVisibility = !deleteButtonVisibility
+                    selectedItems = if (index in selectedItems) {
+                        selectedItems - index
+                    } else {
+                        selectedItems + index
+                    }
                 }
             )
 
             ButtonView(
                 onAddClick = { showAddDialog = !showAddDialog },
                 onDeleteClick = {
-                    deletingItemIndex?.let {
-                        viewModel.removeTest(it)
-                        isDeleting = !isDeleting
-                        deletingItemIndex = null
-                    }
+                    viewModel.deleteItems(selectedItems)
+                    selectedItems = emptySet()
+                    deleteButtonVisibility = !deleteButtonVisibility
                 },
-                isDeleting = isDeleting
+                deleteButtonVisibility = deleteButtonVisibility
             )
         }
-
         if (showAddDialog) {
             AddDialog(
                 onAddClick = {
@@ -157,7 +157,11 @@ fun TotalView(foodList: List<FoodItemModel>) {
 }
 
 @Composable
-fun FoodListView(foodList: List<FoodItemModel>, onLongPress: (itemIndex: Int) -> Unit) {
+fun SelectableList(
+    foodList: List<FoodItemModel>,
+    selectedItems: Set<Int>,
+    onSelectionChange: (Int) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -165,56 +169,41 @@ fun FoodListView(foodList: List<FoodItemModel>, onLongPress: (itemIndex: Int) ->
         )
     ) {
 
-        itemsIndexed(foodList) { index,foodItem ->
+        itemsIndexed(foodList) { index, food ->
             FoodItemView(
-                food = foodItem,
-                isDeleting = {onLongPress(index)}
-//                isSelected = isSelected,
-//                onLongPress = {
-////                    onLongPress(foodList.indexOf(food))
-//                    if (isSelected) {
-//                        selectedItems.remove(index)
-//                        Log.i("myTag","isSelected true")
-//                    } else {
-//                        selectedItems.add(index)
-//                        Log.i("myTag","isSelected false")
-//                    }
-//                }
+                food = food,
+                isSelected = index in selectedItems,
+                onLongPress = {
+                    onSelectionChange(index)
+                }
+
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FoodItemView(
     food: FoodItemModel,
-    isDeleting: ()-> Unit
+    isSelected: Boolean,
+    onLongPress: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
-    var isSelected by remember { mutableStateOf(false) }
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) Color.LightGray else Color.White,
-        label = "BackgroundColorAnimation"
-    )
 
     Box(
         modifier = Modifier
             .padding(horizontal = 6.dp)
-            .background(backgroundColor)
+            .background(if (isSelected) Color.Gray else Color.White)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .pointerInput(isSelected) {
-                    detectTapGestures(
-                        onLongPress = {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            isSelected = !isSelected
-                            if (isSelected) isDeleting()
-                        }
-                    )
-                },
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = onLongPress
+                ),
             elevation = CardDefaults.cardElevation(6.dp)
         ) {
             ConstraintLayout(
@@ -270,7 +259,7 @@ fun FoodItemView(
 fun ButtonView(
     onAddClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    isDeleting: Boolean
+    deleteButtonVisibility: Boolean
 ) {
     Box(
         modifier = Modifier.padding(18.dp)
@@ -282,7 +271,7 @@ fun ButtonView(
             Text(fontSize = 12.sp, text = "Add")
         }
 
-        if (isDeleting) {
+        if (deleteButtonVisibility) {
             Button(
                 modifier = Modifier.size(84.dp),
                 colors = ButtonColors(

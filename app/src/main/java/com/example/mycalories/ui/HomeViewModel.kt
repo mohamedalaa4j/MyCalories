@@ -28,6 +28,15 @@ class HomeViewModel @Inject constructor(
     private val _lazyList = MutableStateFlow<List<Int>>(emptyList())
      val lazyList get() = _lazyList.asStateFlow()
 
+    fun deleteItems(selectedItems: Set<Int>) {
+        viewModelScope.launch {
+            selectedItems.forEach {
+                _foodListState.value -= _foodListState.value[it]
+            }
+            // Also delete from the database if needed
+        }
+    }
+
     fun addLazy(index: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.Main) {
@@ -62,21 +71,21 @@ class HomeViewModel @Inject constructor(
     init {
 //        deleteAll()
 
-//        getFoodList()
-        viewModelScope.launch {
-            addFoodItem(
-                getFoodList()[0]
-            )
-
-            addFoodItem(
-                getFoodList()[1]
-            )
-            addFoodItem(
-                getFoodList()[2]
-            )
-
-            getFoodListFromDb()
-        }
+        getFoodList()
+//        viewModelScope.launch {
+//            addFoodItem(
+//                getFoodList()[0]
+//            )
+//
+//            addFoodItem(
+//                getFoodList()[1]
+//            )
+//            addFoodItem(
+//                getFoodList()[2]
+//            )
+//
+//            getFoodListFromDb()
+//        }
 
 
     }
