@@ -6,7 +6,7 @@ data class FoodItemModel(
     val protein: Double,
     val carp: Double,
     val fat: Double,
-    val weight: Double = 100.0
+    var weight: Double = 100.0
 )
 
 fun getFoodList() = mutableListOf(
