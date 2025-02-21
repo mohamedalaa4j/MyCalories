@@ -7,18 +7,18 @@ import com.example.mycalories.utils.currentDate
 import javax.inject.Inject
 
 
-class AddFoodItemUseCase @Inject constructor(
+class UpdateDatabaseUseCase @Inject constructor(
     private val repository: Repository
 ) {
-    suspend operator fun invoke(foodItem: FoodItemModel) {
+    suspend operator fun invoke(foodItemsList: List<FoodItemModel>) {
         lateinit var record: DayIntakeRecord
 
         repository.getTodayRecord(currentDate()).collect { existingRecord ->
             existingRecord?.let {
-                record = existingRecord.copy(foodIntake = existingRecord.foodIntake + foodItem)
+                record = existingRecord.copy(foodIntake = foodItemsList)
                 return@collect
             }
-            record = DayIntakeRecord(currentDate(), listOf(foodItem), waterIntake = 0.0)
+            record = DayIntakeRecord(currentDate(), foodItemsList, waterIntake = 0.0)
         }
 
         repository.insertRecord(record)

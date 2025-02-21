@@ -60,8 +60,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val foodList by viewModel.foodListState.collectAsState()
-    var selectedItems by remember { mutableStateOf(setOf<Int>()) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var selectedItemsIndex by remember { mutableStateOf(setOf<Int>()) }
     var deleteButtonVisibility by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
 
@@ -78,13 +78,13 @@ fun HomeScreen(
         ) {
             SelectableList(
                 foodList = foodList,
-                selectedItems = selectedItems,
+                selectedItems = selectedItemsIndex,
                 onSelectionChange = { index ->
                     deleteButtonVisibility = !deleteButtonVisibility
-                    selectedItems = if (index in selectedItems) {
-                        selectedItems - index
+                    selectedItemsIndex = if (index in selectedItemsIndex) {
+                        selectedItemsIndex - index
                     } else {
-                        selectedItems + index
+                        selectedItemsIndex + index
                     }
                 }
             )
@@ -92,8 +92,8 @@ fun HomeScreen(
             ButtonView(
                 onAddClick = { showAddDialog = !showAddDialog },
                 onDeleteClick = {
-                    viewModel.deleteItems(selectedItems)
-                    selectedItems = emptySet()
+                    viewModel.deleteSelectedItems(selectedItemsIndex)
+                    selectedItemsIndex = emptySet()
                     deleteButtonVisibility = !deleteButtonVisibility
                 },
                 deleteButtonVisibility = deleteButtonVisibility
@@ -102,8 +102,7 @@ fun HomeScreen(
         if (showAddDialog) {
             AddDialog(
                 onAddClick = {
-//                    viewModel.addFoodItem(it)
-                    viewModel.addTest(it)
+                    viewModel.addFoodItem(it)
                     showAddDialog = !showAddDialog
                 },
                 onDismissClick = { showAddDialog = !showAddDialog }
