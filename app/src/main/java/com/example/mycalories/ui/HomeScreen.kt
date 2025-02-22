@@ -1,12 +1,12 @@
 package com.example.mycalories.ui
 
-import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,16 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -48,39 +51,62 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mycalories.domain.model.FoodItemModel
-import com.example.mycalories.domain.model.getFoodList
+import com.example.mycalories.domain.model.TotalsModel
 import com.example.mycalories.ui.theme.MyCaloriesTheme
+import com.example.mycalories.utils.triggerVibration
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
 fun HomeScreen(
-    defaultFoodList: MutableList<FoodItemModel>
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    var foodList: MutableList<FoodItemModel> by remember { mutableStateOf(defaultFoodList) }
+    val foodList by viewModel.foodListState.collectAsState()
+    val totalsState by viewModel.totalsState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var selectedItemsIndex by remember { mutableStateOf(setOf<Int>()) }
+    var deleteButtonVisibility by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TotalView(foodList)
-//        Text(
-//            modifier = Modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(vertical = 20.dp),
-//            text = foodList.sumOf { it.calories }.toString(),
-//            fontSize = 24.sp,
-//            fontWeight = FontWeight.Bold
-//        )
+        TotalView(totalsState)
 
-//        Spacer(modifier = Modifier.height(16.dp))
-        FoodListView(foodList)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            SelectableList(
+                foodList = foodList,
+                selectedItems = selectedItemsIndex,
+                onSelectionChange = { index ->
+                    deleteButtonVisibility = !deleteButtonVisibility
+                    selectedItemsIndex = if (index in selectedItemsIndex) {
+                        selectedItemsIndex - index
+                    } else {
+                        selectedItemsIndex + index
+                    }
+                }
+            )
 
-        ButtonView { showAddDialog = !showAddDialog }
-
+            ButtonView(
+                onAddClick = { showAddDialog = !showAddDialog },
+                onDeleteClick = {
+                    viewModel.deleteSelectedItems(selectedItemsIndex)
+                    selectedItemsIndex = emptySet()
+                    deleteButtonVisibility = !deleteButtonVisibility
+                },
+                deleteButtonVisibility = deleteButtonVisibility
+            )
+        }
         if (showAddDialog) {
             AddDialog(
                 onAddClick = {
-                    foodList = (foodList + it) as MutableList<FoodItemModel>
+                    viewModel.addFoodItem(it)
                     showAddDialog = !showAddDialog
                 },
                 onDismissClick = { showAddDialog = !showAddDialog }
@@ -90,7 +116,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun TotalView(foodList: MutableList<FoodItemModel>) {
+fun TotalView(totals: TotalsModel) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,7 +130,7 @@ fun TotalView(foodList: MutableList<FoodItemModel>) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = foodList.sumOf { it.calories }.toString(),
+            text = totals.calories.toString(),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
@@ -118,7 +144,6 @@ fun TotalView(foodList: MutableList<FoodItemModel>) {
             text = "Cal",
             fontSize = 12.sp,
         )
-
         Text(
             modifier = Modifier.constrainAs(macros) {
                 top.linkTo(caloriesCount.bottom, margin = 8.dp)
@@ -126,7 +151,7 @@ fun TotalView(foodList: MutableList<FoodItemModel>) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = "${foodList.sumOf { it.protein }} Protein - ${foodList.sumOf { it.carp }} carp - ${foodList.sumOf { it.fat }} fat",
+            text = "${totals.protein} Protein - ${totals.carp} carp - ${totals.fat} fat",
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
@@ -134,90 +159,139 @@ fun TotalView(foodList: MutableList<FoodItemModel>) {
 }
 
 @Composable
-fun FoodListView(foodList: List<FoodItemModel>) {
+fun SelectableList(
+    foodList: List<FoodItemModel>,
+    selectedItems: Set<Int>,
+    onSelectionChange: (Int) -> Unit,
+) {
+    val context = LocalContext.current
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 6.dp)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            bottom = 90.dp,
+        )
     ) {
-        items(foodList) { food ->
-            FoodItemView(food = food)
+
+        itemsIndexed(foodList) { index, food ->
+            FoodItemView(
+                food = food,
+                isSelected = index in selectedItems,
+                onLongPress = {
+                    triggerVibration(context)
+                    onSelectionChange(index)
+                }
+
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FoodItemView(food: FoodItemModel) {
-    Card(
+fun FoodItemView(
+    food: FoodItemModel,
+    isSelected: Boolean,
+    onLongPress: () -> Unit
+) {
+    val multiplicationCoefficient = BigDecimal(food.weight / 100.0)
+    val totalCalories = BigDecimal(food.calories).multiply(multiplicationCoefficient).setScale(2, RoundingMode.HALF_UP)
+    val totalProtein = BigDecimal(food.protein).multiply(multiplicationCoefficient).setScale(2, RoundingMode.HALF_UP)
+    val totalCarp = BigDecimal(food.carp).multiply(multiplicationCoefficient).setScale(2, RoundingMode.HALF_UP)
+    val totalFat = BigDecimal(food.fat).multiply(multiplicationCoefficient).setScale(2, RoundingMode.HALF_UP)
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+            .padding(horizontal = 6.dp)
+            .background(if (isSelected) Color.Gray else Color.White)
     ) {
-        ConstraintLayout(
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
+                .fillMaxWidth()
+                .padding(4.dp)
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = onLongPress
+                ),
+            elevation = CardDefaults.cardElevation(6.dp)
         ) {
-            val (name, macros, calories) = createRefs()
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+            ) {
+                val (name, macros, calories) = createRefs()
 
-            Text(
-                modifier = Modifier.constrainAs(name) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(macros.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(calories.start)
-                    width = Dimension.fillToConstraints
-                },
-                text = food.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    modifier = Modifier.constrainAs(name) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(macros.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(calories.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    text = food.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Text(
-                modifier = Modifier.constrainAs(macros) {
-                    top.linkTo(name.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(calories.start)
-                    width = Dimension.fillToConstraints
-                },
-                text = "${food.protein} Protein - ${food.carp} carp - ${food.fat} fat",
-                fontSize = 12.sp,
-            )
+                Text(
+                    modifier = Modifier.constrainAs(macros) {
+                        top.linkTo(name.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(calories.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    text = "$totalProtein Protein - $totalCarp carp - $totalFat fat",
+                    fontSize = 12.sp,
+                )
 
-            Text(
-                modifier = Modifier.constrainAs(calories) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                },
-                text = "${food.calories} Cal",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    modifier = Modifier.constrainAs(calories) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    },
+                    text = "$totalCalories Cal",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
         }
-
     }
+
 }
 
 @Composable
 fun ButtonView(
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    deleteButtonVisibility: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Red)
-            .padding(vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
+    Box(
+        modifier = Modifier.padding(18.dp)
     ) {
         Button(
-            modifier = Modifier
-                .size(70.dp),
+            modifier = Modifier.size(84.dp),
             onClick = onAddClick
         ) {
             Text(fontSize = 12.sp, text = "Add")
+        }
+
+        if (deleteButtonVisibility) {
+            Button(
+                modifier = Modifier.size(84.dp),
+                colors = ButtonColors(
+                    Color.Red,
+                    Color.White,
+                    Color.Red,
+                    Color.Red,
+                ),
+                onClick = onDeleteClick
+            ) {
+                Text(fontSize = 12.sp, text = "Delete")
+            }
         }
     }
 }
@@ -228,7 +302,6 @@ fun AddDialog(
     onDismissClick: () -> Unit
 ) {
     var selectedItem: FoodItemModel? by remember { mutableStateOf(null) }
-    var totalCalories: Double? by remember { mutableStateOf(100.0) }
 
     Dialog(
         properties = DialogProperties(
@@ -295,8 +368,6 @@ fun AddDialog(
                     value = weightInput,
                     onValueChange = {
                         weightInput = it
-                        Log.i("myTag", "calories = ${selectedItem?.calories}")
-                        Log.i("myTag", "weight = $weightInput")
                     }
                 )
 
@@ -306,9 +377,7 @@ fun AddDialog(
                         bottom.linkTo(tfWeight.bottom)
                         end.linkTo(parent.end)
                     },
-                    text = calculateWeightCalories(selectedItem?.calories, weightInput),
-//                    text = totalCalories.toString(),
-//                    text = "g",
+                    text = calculateWeightCalories(selectedItem?.calories, weightInput) + " cal",
                     fontWeight = FontWeight.Bold
                 )
                 Button(
@@ -318,7 +387,7 @@ fun AddDialog(
                         end.linkTo(parent.end)
                     },
                     onClick = {
-
+                        selectedItem?.weight = weightInput.toDouble()
                         onAddClick(selectedItem!!)
                     }
                 ) {
@@ -336,8 +405,6 @@ fun AddDialog(
                     onItemClick = { item ->
                         selectedItem = item
                         focusManager.clearFocus()
-                        Log.i("myTag", "calories = ${selectedItem?.calories}")
-                        Log.i("myTag", "weight = $weightInput")
                     },
                     onKeyboardDone = {
                         focusManager.clearFocus()
@@ -353,9 +420,7 @@ fun calculateWeightCalories(calories: Double?, weight: String): String {
     return if (weight == "" || weight == "0") {
         "0.0"
     } else {
-        val calculated = calories?.times((weight.toDouble() / 100.0))
-        Log.i("myTag", "calculated = $calculated")
-        Log.i("myTag", "=================")
+        val calculated = calories?.times((weight.toDouble() / 100.0)) ?: 0.0
         return calculated.toString()
     }
 }
@@ -364,6 +429,6 @@ fun calculateWeightCalories(calories: Double?, weight: String): String {
 @Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_3)
 fun Preview() {
     MyCaloriesTheme {
-        HomeScreen(getFoodList())
+        HomeScreen()
     }
 }
