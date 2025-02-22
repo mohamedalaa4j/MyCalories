@@ -15,13 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -272,22 +273,20 @@ fun ButtonView(
     Box(
         modifier = Modifier.padding(18.dp)
     ) {
-        Button(
-            modifier = Modifier.size(84.dp),
+        FloatingActionButton(
+            modifier = Modifier.size(64.dp),
+            shape = CircleShape,
             onClick = onAddClick
         ) {
             Text(fontSize = 12.sp, text = "Add")
         }
 
         if (deleteButtonVisibility) {
-            Button(
-                modifier = Modifier.size(84.dp),
-                colors = ButtonColors(
-                    Color.Red,
-                    Color.White,
-                    Color.Red,
-                    Color.Red,
-                ),
+            FloatingActionButton(
+                modifier = Modifier.size(64.dp),
+                shape = CircleShape,
+                containerColor = Color.Red,
+                contentColor = Color.White,
                 onClick = onDeleteClick
             ) {
                 Text(fontSize = 12.sp, text = "Delete")
