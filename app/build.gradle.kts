@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -91,5 +92,9 @@ dependencies {
 
     // Lifecycle runtime for Compose (coroutine scope awareness)
     implementation(libs.coroutines.compose.lifecyle.awarreness)
+
+    // kotlin serialization for navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
 }
