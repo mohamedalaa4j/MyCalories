@@ -246,6 +246,22 @@ fun getFoodList(context: Context) = mutableListOf(
     ),
 
     FoodItemModel(
+        "لوبيا بيضاء",
+        67.0,
+        6.0,
+        13.0,
+        0.7
+    ),
+
+    FoodItemModel(
+        "لوبيا عين سوداء",
+        116.0,
+        8.0,
+        21.0,
+        0.5
+    ),
+
+    FoodItemModel(
         "لانشون",
         230.0,
         13.0,
