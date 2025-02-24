@@ -190,11 +190,74 @@ fun getFoodList(context: Context) = mutableListOf(
     ),
 
     FoodItemModel(
+        context.getString(R.string.milk),
+        63.0,
+        3.4,
+        4.6,
+        3.6
+    ),
+
+    FoodItemModel(
+        context.getString(R.string.sugar),
+        387.0,
+        0.0,
+        100.0,
+        0.0
+    ),
+
+    FoodItemModel(
+        "My Nescafe Blend",
+        117.29,
+        3.1,
+        13.48,
+        5.86
+    ),
+
+    FoodItemModel(
+        "My Cappuccino Blend",
+        96.18,
+        3.3,
+        12.95,
+        3.7
+    ),
+
+    FoodItemModel(
+        "Break Nescafe 2X1 (12g)",
+        63.4,
+        0.52,
+        6.8,
+        3.8
+    ),
+
+    FoodItemModel(
+        "Nestle Nescafe GOLD (21g)",
+        95.0,
+        0.6,
+        15.8,
+        3.3
+    ),
+
+    FoodItemModel(
+        "Break Cappuccino (18.5g)",
+        78.5,
+        1.5,
+        13.96,
+        1.87
+    ),
+
+    FoodItemModel(
         "لانشون",
         230.0,
         13.0,
         8.0,
         16.0
+    ),
+    FoodItemModel(
+        "جبنه رومى",
+        407.0,
+        25.0,
+        1.0,
+        34.0
     ),
 
     FoodItemModel(
@@ -211,6 +274,30 @@ fun getFoodList(context: Context) = mutableListOf(
         0.9,
         10.5,
         2.9
+    ),
+
+    FoodItemModel(
+        "بسكويت شاتوه (13 جم)",
+        528.0,
+        8.0,
+        62.0,
+        24.0
+    ),
+
+    FoodItemModel(
+        "بسكويت بمبو",
+        160.0,
+        1.0,
+        30.0,
+        6.0
+    ),
+
+    FoodItemModel(
+        "مولتو (قطعه)",
+        247.95,
+        4.39,
+        29.07,
+        12.54
     ),
 
     )

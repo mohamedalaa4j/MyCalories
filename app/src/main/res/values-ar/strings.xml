@@ -42,6 +42,7 @@
     <string name="biscuits_entity">باكو بسكويت</string>
     <string name="oats">شوفان</string>
     <string name="liver">كبده</string>
-
+    <string name="milk">حليب</string>
+    <string name="sugar">سكر</string>
 
 </resources>

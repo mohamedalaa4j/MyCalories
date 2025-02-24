@@ -40,4 +40,6 @@
     <string name="biscuits_entity">Biscuits entity</string>
     <string name="oats">Oats</string>
     <string name="liver">Liver</string>
+    <string name="milk">Milk</string>
+    <string name="sugar">Sugar</string>
 </resources>
