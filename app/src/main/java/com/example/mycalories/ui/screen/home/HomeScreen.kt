@@ -1,4 +1,4 @@
-package com.example.mycalories.ui
+package com.example.mycalories.ui.screen.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

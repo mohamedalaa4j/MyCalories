@@ -17,8 +17,8 @@ class RepositoryImpl @Inject constructor(
         return flowOf(db.getRecordByDate(currentData))
     }
 
-    override suspend fun getAllRecords(): Flow<List<DayIntakeRecord>> {
-        return flowOf(db.getAllRecords())
+    override suspend fun getAllRecords(): List<DayIntakeRecord> {
+        return db.getAllRecords()
     }
 
     override suspend fun deleteAllRecords() {

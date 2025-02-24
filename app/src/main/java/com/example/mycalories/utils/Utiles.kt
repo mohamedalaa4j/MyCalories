@@ -6,12 +6,20 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 fun currentDate(): String {
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return sdf.format(Date())
+}
+
+fun yesterdayDate(): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DATE, -1) // Subtract 1 day
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return formatter.format(calendar.time)
 }
 
 fun triggerVibration(context: Context, duration: Long = 50) {

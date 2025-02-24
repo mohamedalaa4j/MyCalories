@@ -1,4 +1,4 @@
-package com.example.mycalories.ui
+package com.example.mycalories.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
