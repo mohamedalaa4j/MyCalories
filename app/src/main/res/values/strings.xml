@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">My Calories</string>
+    <string name="cal">Cal</string>
+    <string name="cal_s">%.2f Cal</string>
+    <string name="macros">%.2f Protein - %.2f Carp - %.2f Fat</string>
+    <string name="add">Add</string>
+    <string name="remove">Remove</string>
+
+    <string name="home">Home</string>
+    <string name="history">History</string>
 </resources>

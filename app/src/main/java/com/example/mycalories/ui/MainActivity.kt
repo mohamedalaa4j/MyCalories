@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         NavigationBar {
-                            getBottomNavigationItems().forEachIndexed { index, item ->
+                            getBottomNavigationItems(this@MainActivity).forEachIndexed { index, item ->
                                 NavigationBarItem(
                                     selected = index == selectedItemIndex,
                                     label = { Text(text = item.title) },

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">سعراتى</string>
+    <string name="cal">سعره</string>
+    <string name="cal_s">%.2f سعره</string>
+    <string name="macros">%.2f بروتين - %.2f نشويات - %.2f دهن</string>
+    <string name="add">أضف</string>
+    <string name="remove">إزاله</string>
+
+    <string name="home">الرئيسيه</string>
+    <string name="history">السجل</string>
+</resources>

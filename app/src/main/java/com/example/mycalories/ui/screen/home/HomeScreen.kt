@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +54,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mycalories.R
 import com.example.mycalories.domain.model.FoodItemModel
 import com.example.mycalories.domain.model.TotalsModel
 import com.example.mycalories.ui.theme.MyCaloriesTheme
@@ -142,7 +144,7 @@ fun TotalView(totals: TotalsModel) {
                 bottom.linkTo(caloriesCount.bottom)
                 start.linkTo(caloriesCount.end, margin = 8.dp)
             },
-            text = "Cal",
+            text = stringResource(R.string.cal),
             fontSize = 12.sp,
         )
         Text(
@@ -152,7 +154,8 @@ fun TotalView(totals: TotalsModel) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = "${totals.protein} Protein - ${totals.carp} carp - ${totals.fat} fat",
+//            text = "${totals.protein} Protein - ${totals.carp} carp - ${totals.fat} fat",
+            text = String.format(stringResource(R.string.macros), totals.protein, totals.carp, totals.fat),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
@@ -243,7 +246,8 @@ fun FoodItemView(
                         end.linkTo(calories.start)
                         width = Dimension.fillToConstraints
                     },
-                    text = "$totalProtein Protein - $totalCarp carp - $totalFat fat",
+//                    text = "$totalProtein Protein - $totalCarp carp - $totalFat fat",
+                    text = String.format(stringResource(R.string.macros), totalProtein, totalCarp, totalFat),
                     fontSize = 12.sp,
                 )
 
@@ -253,12 +257,12 @@ fun FoodItemView(
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
                     },
-                    text = "$totalCalories Cal",
+//                    text = "$totalCalories Cal",
+                    text = String.format(stringResource(R.string.cal_s), totalCalories.toDouble()),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
-
         }
     }
 
@@ -278,7 +282,7 @@ fun ButtonView(
             shape = CircleShape,
             onClick = onAddClick
         ) {
-            Text(fontSize = 12.sp, text = "Add")
+            Text(fontSize = 12.sp, text = stringResource(id = R.string.add))
         }
 
         if (deleteButtonVisibility) {
@@ -289,7 +293,7 @@ fun ButtonView(
                 contentColor = Color.White,
                 onClick = onDeleteClick
             ) {
-                Text(fontSize = 12.sp, text = "Delete")
+                Text(fontSize = 12.sp, text = stringResource(R.string.remove))
             }
         }
     }
