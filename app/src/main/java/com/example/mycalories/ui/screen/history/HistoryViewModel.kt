@@ -1,8 +1,10 @@
 package com.example.mycalories.ui.screen.history
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mycalories.R
 import com.example.mycalories.domain.model.FoodItemModel
 import com.example.mycalories.domain.model.HistoryModel
 import com.example.mycalories.domain.model.RecordDate
@@ -30,7 +32,7 @@ class HistoryViewModel @Inject constructor(
 //        getAllRecords()
     }
 
-     fun getAllRecords() {
+     fun getAllRecords(context: Context) {
          Log.i("myTag","getAllRecords")
         viewModelScope.launch(Dispatchers.IO) {
             val recordsState: MutableList<HistoryModel> = mutableListOf()
@@ -38,8 +40,8 @@ class HistoryViewModel @Inject constructor(
 
             result.forEach { day ->
                 val date = when (day.date) {
-                    currentDate() -> "Today"
-                    yesterdayDate() -> "Yesterday"
+                    currentDate() -> context.getString(R.string.today)
+                    yesterdayDate() -> context.getString(R.string.yesterday)
                     else -> day.date
                 }
                 val totals = calculateTotals(day.foodIntake)

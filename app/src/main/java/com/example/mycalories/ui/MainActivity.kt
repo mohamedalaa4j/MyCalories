@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                             val historyList by viewModel.recordsState.collectAsState()
                             HistoryScreen(
                                 recordsList = historyList,
-                                fetchRecords = viewModel::getAllRecords
+                                fetchRecords = {viewModel.getAllRecords(this@MainActivity)}
                             )
                         }
                     }

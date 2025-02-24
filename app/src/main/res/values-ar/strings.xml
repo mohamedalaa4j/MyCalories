@@ -7,6 +7,16 @@
     <string name="add">أضف</string>
     <string name="remove">إزاله</string>
 
+    <string name="date">التاريخ</string>
+    <string name="calories">السعرات</string>
+    <string name="protein">البروتين</string>
+    <string name="carp">النشويات</string>
+    <string name="fat">الدهن</string>
+
+    <string name="today">اليوم</string>
+    <string name="yesterday">أمس</string>
+
+
     <string name="home">الرئيسيه</string>
     <string name="history">السجل</string>
 </resources>

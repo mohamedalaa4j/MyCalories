@@ -20,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mycalories.R
 import com.example.mycalories.domain.model.HistoryModel
 import com.example.mycalories.domain.model.RecordDate
 import com.example.mycalories.domain.model.TotalsModel
@@ -59,32 +61,32 @@ fun HistoryScreen(
             ) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Date",
+                    text = stringResource(id = R.string.date),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             Text(
-                text = "Calories",
+                text = stringResource(id = R.string.calories),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Protein",
+                text = stringResource(id = R.string.protein),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Carp",
+                text = stringResource(id = R.string.carp),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Fat",
+                text = stringResource(id = R.string.fat),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
