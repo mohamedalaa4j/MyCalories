@@ -17,4 +17,27 @@
 
     <string name="home">Home</string>
     <string name="history">History</string>
+
+    <string name="chicken_breast">Chicken Breast</string>
+    <string name="chicken_breast_fried">Fried Chicken Breast</string>
+    <string name="rice">Rice</string>
+    <string name="bread">Bread</string>
+    <string name="egg">Egg</string>
+    <string name="lentils">Lentils</string>
+    <string name="taro">Taro</string>
+    <string name="falafel">Falafel</string>
+    <string name="beans">Beans</string>
+    <string name="tuna">Tuna</string>
+    <string name="pea">Pea</string>
+    <string name="potato">Potato</string>
+    <string name="meat">Meat</string>
+    <string name="french_fries">French fries</string>
+    <string name="pasta">Pasta</string>
+    <string name="chicken_wings_fried">Chicken wings fried</string>
+    <string name="hot_dog">Hot Dog</string>
+    <string name="tilapia">Tilapia</string>
+    <string name="green_beans">Green beans</string>
+    <string name="biscuits_entity">Biscuits entity</string>
+    <string name="oats">Oats</string>
+    <string name="liver">Liver</string>
 </resources>

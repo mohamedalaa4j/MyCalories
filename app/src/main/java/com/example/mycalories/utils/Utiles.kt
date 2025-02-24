@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -20,6 +21,12 @@ fun yesterdayDate(): String {
     calendar.add(Calendar.DATE, -1) // Subtract 1 day
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return formatter.format(calendar.time)
+}
+
+
+fun formatNumbers(value: Double): String {
+    val formatter = NumberFormat.getInstance(Locale.getDefault()) // Auto-detect app locale
+    return formatter.format(value)
 }
 
 fun triggerVibration(context: Context, duration: Long = 50) {

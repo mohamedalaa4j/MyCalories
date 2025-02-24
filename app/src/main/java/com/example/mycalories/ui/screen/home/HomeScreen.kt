@@ -58,6 +58,7 @@ import com.example.mycalories.R
 import com.example.mycalories.domain.model.FoodItemModel
 import com.example.mycalories.domain.model.TotalsModel
 import com.example.mycalories.ui.theme.MyCaloriesTheme
+import com.example.mycalories.utils.formatNumbers
 import com.example.mycalories.utils.triggerVibration
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -133,7 +134,8 @@ fun TotalView(totals: TotalsModel) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = totals.calories.toString(),
+//            text = totals.calories.toString(),
+            text = String.format(formatNumbers(totals.calories)),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
@@ -380,7 +382,7 @@ fun AddDialog(
                         bottom.linkTo(tfWeight.bottom)
                         end.linkTo(parent.end)
                     },
-                    text = calculateWeightCalories(selectedItem?.calories, weightInput) + " cal",
+                    text = calculateWeightCalories(selectedItem?.calories, weightInput) + " " + stringResource(id = R.string.cal),
                     fontWeight = FontWeight.Bold
                 )
                 Button(
@@ -394,7 +396,7 @@ fun AddDialog(
                         onAddClick(selectedItem!!)
                     }
                 ) {
-                    Text(text = "Add")
+                    Text(text = stringResource(id = R.string.add))
                 }
 
 

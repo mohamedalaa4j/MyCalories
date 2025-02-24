@@ -19,4 +19,29 @@
 
     <string name="home">الرئيسيه</string>
     <string name="history">السجل</string>
+
+    <string name="chicken_breast">صدور دجاج</string>
+    <string name="chicken_breast_fried">صدور دجاج مقلية</string>
+    <string name="rice">أرز</string>
+    <string name="bread">خبز</string>
+    <string name="egg">بيض</string>
+    <string name="lentils">عدس</string>
+    <string name="taro">قلقاس</string>
+    <string name="falafel">فلافل</string>
+    <string name="beans">فول</string>
+    <string name="tuna">تونا</string>
+    <string name="pea">بازلاء</string>
+    <string name="potato">بطاطس</string>
+    <string name="meat">لحم</string>
+    <string name="french_fries">بطاطس مقليه</string>
+    <string name="pasta">مكرونه</string>
+    <string name="chicken_wings_fried">أجنحة دجاج مقلية</string>
+    <string name="hot_dog">هوت دوج</string>
+    <string name="tilapia">سمك بلطى</string>
+    <string name="green_beans">فاصوليا خضراء</string>
+    <string name="biscuits_entity">باكو بسكويت</string>
+    <string name="oats">شوفان</string>
+    <string name="liver">كبده</string>
+
+
 </resources>

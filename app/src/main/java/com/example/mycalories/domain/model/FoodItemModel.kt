@@ -1,5 +1,8 @@
 package com.example.mycalories.domain.model
 
+import android.content.Context
+import com.example.mycalories.R
+
 data class FoodItemModel(
     val name: String,
     val calories: Double,
@@ -9,9 +12,9 @@ data class FoodItemModel(
     var weight: Double = 100.0
 )
 
-fun getFoodList() = mutableListOf(
+fun getFoodList(context: Context) = mutableListOf(
     FoodItemModel(
-        "Chicken Breast",
+        context.getString(R.string.chicken_breast),
         165.0,
         31.0,
         200.0,
@@ -19,7 +22,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Chicken Breast Fried",
+        context.getString(R.string.chicken_breast_fried),
         260.0,
         25.0,
         9.28,
@@ -27,7 +30,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Rice",
+        context.getString(R.string.rice),
         130.0,
         2.6,
         28.0,
@@ -35,7 +38,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Bread",
+        context.getString(R.string.bread),
         300.0,
         9.4,
         56.0,
@@ -43,7 +46,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Egg",
+        context.getString(R.string.egg),
         71.0,
         6.5,
         0.36,
@@ -51,7 +54,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Lentils",
+        context.getString(R.string.lentils),
         116.0,
         9.0,
         20.0,
@@ -59,7 +62,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Taro",
+        context.getString(R.string.taro),
         122.0,
         1.5,
         26.5,
@@ -67,7 +70,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Falafel",
+        context.getString(R.string.falafel),
         333.0,
         13.0,
         32.0,
@@ -75,7 +78,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Beans",
+        context.getString(R.string.beans),
         347.0,
         21.0,
         63.0,
@@ -83,7 +86,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Tuna",
+        context.getString(R.string.tuna),
         238.0,
         33.6,
         0.0,
@@ -91,7 +94,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Pea",
+        context.getString(R.string.pea),
         81.0,
         5.0,
         14.0,
@@ -99,7 +102,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Potato",
+        context.getString(R.string.potato),
         77.0,
         2.0,
         17.0,
@@ -107,7 +110,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Meat",
+        context.getString(R.string.meat),
         143.0,
         26.0,
         0.0,
@@ -115,7 +118,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "French fries",
+        context.getString(R.string.french_fries),
         312.0,
         3.4,
         41.0,
@@ -123,7 +126,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Pasta",
+        context.getString(R.string.pasta),
         131.0,
         5.0,
         25.0,
@@ -131,7 +134,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Chicken wings fried",
+        context.getString(R.string.chicken_wings_fried),
         285.0,
         25.38,
         4.44,
@@ -139,7 +142,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Hot Dog",
+        context.getString(R.string.hot_dog),
         290.0,
         10.0,
         4.2,
@@ -147,7 +150,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Tilapia",
+        context.getString(R.string.tilapia),
         129.0,
         26.0,
         0.0,
@@ -155,7 +158,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Green beans",
+        context.getString(R.string.green_beans),
         31.0,
         1.8,
         7.0,
@@ -163,7 +166,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Biscuits entity",
+        context.getString(R.string.biscuits_entity),
         238.4,
         3.36,
         35.36,
@@ -171,7 +174,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Oats",
+        context.getString(R.string.oats),
         374.0,
         11.0,
         60.0,
@@ -179,15 +182,7 @@ fun getFoodList() = mutableListOf(
     ),
 
     FoodItemModel(
-        "Liver",
-        165.0,
-        26.0,
-        3.8,
-        4.4
-    ),
-
-    FoodItemModel(
-        "Liver",
+        context.getString(R.string.liver),
         165.0,
         26.0,
         3.8,

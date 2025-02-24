@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,11 +43,13 @@ import com.example.mycalories.ui.theme.MyCaloriesTheme
 @Composable
 fun FoodSearchView(
     modifier: Modifier = Modifier,
-    foodList: List<FoodItemModel> = getFoodList(),
+//    foodList: List<FoodItemModel> = getFoodList(),
     onItemClick: (item: FoodItemModel) -> Unit,
     onKeyboardDone: () -> Unit
 ) {
 //    val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val foodList: List<FoodItemModel> = getFoodList(context)
 
     Column(
         modifier = modifier
@@ -125,7 +129,7 @@ fun FoodsItemView(item: FoodItemModel, onItemClick: () -> Unit) {
                     width = Dimension.fillToConstraints
                 }
                 .padding(8.dp),
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             text = item.name
         )
 
@@ -138,8 +142,10 @@ fun FoodsItemView(item: FoodItemModel, onItemClick: () -> Unit) {
                 }
                 .padding(8.dp),
             fontSize = 14.sp,
-            text = "${item.calories} cal"
-        )
+//            text = "${item.calories} cal"
+            text = String.format(stringResource(R.string.cal_s), item.calories),
+
+            )
 
 
         Box(
