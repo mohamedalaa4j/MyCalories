@@ -1,10 +1,9 @@
 package com.example.mycalories.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -34,10 +33,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    //    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
+        enableEdgeToEdge()
         setContent {
             MyCaloriesTheme {
                 val navController = rememberNavController()
@@ -84,7 +83,10 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     NavHost(
-                        modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                        modifier = Modifier.padding(
+                            bottom = innerPadding.calculateBottomPadding(),
+                            top = innerPadding.calculateTopPadding()
+                        ),
                         navController = navController,
                         startDestination = Routes.HomeScreen,
                     ) {
@@ -96,10 +98,10 @@ class MainActivity : ComponentActivity() {
 //                            val args = it.toRoute<Routes.SecondScreenRoute>()
                             val viewModel: HistoryViewModel = hiltViewModel()
                             val historyList by viewModel.recordsState.collectAsState()
-                                HistoryScreen(
-                                    recordsList = historyList,
-                                    fetchRecords = viewModel::getAllRecords
-                                )
+                            HistoryScreen(
+                                recordsList = historyList,
+                                fetchRecords = viewModel::getAllRecords
+                            )
                         }
                     }
                 }
