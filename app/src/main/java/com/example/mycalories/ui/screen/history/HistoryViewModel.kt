@@ -38,7 +38,7 @@ class HistoryViewModel @Inject constructor(
             val recordsState: MutableList<HistoryModel> = mutableListOf()
             val result = getAllRecordsUseCase()
 
-            result.forEach { day ->
+            result.sortedBy { it.date }.reversed().forEach { day ->
                 val date = when (day.date) {
                     currentDate() -> context.getString(R.string.today)
                     yesterdayDate() -> context.getString(R.string.yesterday)
@@ -53,7 +53,7 @@ class HistoryViewModel @Inject constructor(
                 )
             }
 
-            _recordsState.value = recordsState.sortedBy { it.date.date }.reversed()
+            _recordsState.value = recordsState
         }
     }
 

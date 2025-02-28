@@ -17,7 +17,7 @@ fun getFoodList(context: Context) = mutableListOf(
         context.getString(R.string.chicken_breast),
         165.0,
         31.0,
-        200.0,
+        0.0,
         3.6
     ),
 
@@ -115,6 +115,14 @@ fun getFoodList(context: Context) = mutableListOf(
         26.0,
         0.0,
         3.5
+    ),
+
+    FoodItemModel(
+        context.getString(R.string.ground_meat),
+        241.0,
+        24.0,
+        0.0,
+        15.0
     ),
 
     FoodItemModel(
@@ -262,12 +270,61 @@ fun getFoodList(context: Context) = mutableListOf(
     ),
 
     FoodItemModel(
+        "كشرى مصرى",
+        318.0,
+        11.0,
+        60.0,
+        3.6
+    ),
+
+    FoodItemModel(
+        "كشرى عدس اصفر",
+        150.0,
+        5.8,
+        24.0,
+        0.35
+    ),
+
+    FoodItemModel(
+        "محشى كرنب",
+        188.38,
+        10.05,
+        4.5,
+        14.38
+    ),
+
+    FoodItemModel(
+        "محشى كوسه",
+        86.0,
+        4.9,
+        14.7,
+        1.5
+    ),
+
+    FoodItemModel(
+        "زيت حار/زيتون/عادى",
+        884.0,
+        0.0,
+        0.0,
+        100.0
+    ),
+
+    FoodItemModel(
+        "طحينة",
+        595.0,
+        17.0,
+        21.0,
+        54.0
+    ),
+
+    FoodItemModel(
         "لانشون",
         230.0,
         13.0,
         8.0,
         16.0
     ),
+
     FoodItemModel(
         "جبنه رومى",
         407.0,
@@ -302,10 +359,10 @@ fun getFoodList(context: Context) = mutableListOf(
 
     FoodItemModel(
         "بسكويت بمبو",
-        160.0,
-        1.0,
-        30.0,
-        6.0
+        141.18,
+        1.6,
+        18.9,
+        7.2
     ),
 
     FoodItemModel(
@@ -314,6 +371,14 @@ fun getFoodList(context: Context) = mutableListOf(
         4.39,
         29.07,
         12.54
+    ),
+
+    FoodItemModel(
+        "اندومى شعيرة مقلية",
+        380.0,
+        7.0,
+        49.0,
+        17.0
     ),
 
     )
